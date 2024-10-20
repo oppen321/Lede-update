@@ -98,7 +98,7 @@ git clone --depth=1 https://github.com/sirpdboy/luci-app-netwizard package/luci-
 git clone --depth=1 https://github.com/sirpdboy/luci-app-autotimeset package/luci-app-autotimeset
 
 # eqosplus
-git clone --depth=1 https://github.com/sirpdboy/luci-app-eqosplus package/luci-app-eqosplus
+git clone https://github.com/sirpdboy/luci-app-eqosplus package/luci-app-eqosplus
 
 # luci-app-partexp
 git clone --depth=1 https://github.com/sirpdboy/luci-app-partexp package/luci-app-partexp
