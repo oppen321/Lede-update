@@ -45,6 +45,7 @@ git clone --depth=1 https://github.com/destan19/OpenAppFilter package/OpenAppFil
 git clone --depth=1 https://github.com/Jason6111/luci-app-netdata package/luci-app-netdata
 git_sparse_clone main https://github.com/Lienol/openwrt-package luci-app-filebrowser luci-app-ssr-mudb-server
 git clone --depth=1 https://github.com/sirpdboy/luci-app-eqosplus package/luci-app-eqosplus
+git_sparse_clone main https://github.com/sirpdboy/sirpdboy-package luci-app-socat luci-theme-kucat
 
 
 # 科学上网插件
