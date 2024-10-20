@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # 修改默认IP
+sed -i 's/192.168.1.1/10.0.0.1/g' package/base-files/luci2/bin/config_generate
 sed -i 's/192.168.1.1/10.0.0.1/g' package/base-files/files/bin/config_generate
 
 # 更改默认 Shell 为 zsh
@@ -119,6 +120,7 @@ sed -i 's/6.1/6.6/g'  ./target/linux/x86/Makefile
 sed -i 's/6.1/6.6/g'  ./target/linux/rockchip/Makefile
 
 ##更改主机名
+sed -i "s/hostname='.*'/hostname='ZeroWrt'/g" package/base-files/luci2/bin/config_generate
 sed -i "s/hostname='.*'/hostname='ZeroWrt'/g" package/base-files/files/bin/config_generate
 
 # 修改 Makefile
