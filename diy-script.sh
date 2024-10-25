@@ -136,6 +136,40 @@ echo -e "msgstr \"控制\"" >> feeds/luci/modules/luci-base/po/zh_Hans/base.po
 # 修改位置
 sed -i 's/\("admin"\), *\("netwizard"\)/\1, "system", \2/g' package/luci-app-netwizard/luasrc/controller/*.lua
 
+sed -i 's/services/vpn/g' package/luci-app-ssr-plus/luci-app-ssr-plus/luasrc/controller/*.lua
+sed -i 's/services/vpn/g' package/luci-app-ssr-plus/luci-app-ssr-plus/luasrc/model/cbi/shadowsocksr/*.lua
+sed -i 's/services/vpn/g' package/luci-app-ssr-plus/luci-app-ssr-plus/luasrc/view/shadowsocksr/*.htm
+
+sed -i 's/services/vpn/g' package/luci-app-passwall/luci-app-passwall/luasrc/controller/*.lua
+sed -i 's/services/vpn/g' package/luci-app-passwall/luci-app-passwall/luasrc/passwall/*.lua
+sed -i 's/services/vpn/g' package/luci-app-passwall/luci-app-passwall/luasrc/model/cbi/passwall/client/*.lua
+sed -i 's/services/vpn/g' package/luci-app-passwall/luci-app-passwall/luasrc/model/cbi/passwall/server/*.lua
+sed -i 's/services/vpn/g' package/luci-app-passwall/luci-app-passwall/luasrc/view/passwall/app_update/*.htm
+sed -i 's/services/vpn/g' package/luci-app-passwall/luci-app-passwall/luasrc/view/passwall/socks_auto_switch/*.htm
+sed -i 's/services/vpn/g' package/luci-app-passwall/luci-app-passwall/luasrc/view/passwall/global/*.htm
+sed -i 's/services/vpn/g' package/luci-app-passwall/luci-app-passwall/luasrc/view/passwall/haproxy/*.htm
+sed -i 's/services/vpn/g' package/luci-app-passwall/luci-app-passwall/luasrc/view/passwall/log/*.htm
+sed -i 's/services/vpn/g' package/luci-app-passwall/luci-app-passwall/luasrc/view/passwall/node_list/*.htm
+sed -i 's/services/vpn/g' package/luci-app-passwall/luci-app-passwall/luasrc/view/passwall/rule/*.htm
+sed -i 's/services/vpn/g' package/luci-app-passwall/luci-app-passwall/luasrc/view/passwall/server/*.htm
+
+sed -i 's/services/vpn/g' package/luci-app-passwall2/luci-app-passwall2/luasrc/controller/*.lua
+sed -i 's/services/vpn/g' package/luci-app-passwall2/luci-app-passwall2/luasrc/passwall2/*.lua
+sed -i 's/services/vpn/g' package/luci-app-passwall2/luci-app-passwall2/luasrc/model/cbi/passwall2/client/*.lua
+sed -i 's/services/vpn/g' package/luci-app-passwall2/luci-app-passwall2/luasrc/model/cbi/passwall2/server/*.lua
+sed -i 's/services/vpn/g' package/luci-app-passwall2/luci-app-passwall2/luasrc/view/passwall2/app_update/*.htm
+sed -i 's/services/vpn/g' package/luci-app-passwall2/luci-app-passwall2/luasrc/view/passwall2/socks_auto_switch/*.htm
+sed -i 's/services/vpn/g' package/luci-app-passwall2/luci-app-passwall2/luasrc/view/passwall2/global/*.htm
+sed -i 's/services/vpn/g' package/luci-app-passwall2/luci-app-passwall2/luasrc/view/passwall2/haproxy/*.htm
+sed -i 's/services/vpn/g' package/luci-app-passwall2/luci-app-passwall2/luasrc/view/passwall2/log/*.htm
+sed -i 's/services/vpn/g' package/luci-app-passwall2/luci-app-passwall2/luasrc/view/passwall2/node_list/*.htm
+sed -i 's/services/vpn/g' package/luci-app-passwall2/luci-app-passwall2/luasrc/view/passwall2/rule/*.htm
+sed -i 's/services/vpn/g' package/luci-app-passwall2/luci-app-passwall2/luasrc/view/passwall2/server/*.htm
+
+sed -i 's/services/vpn/g' package/luci-app-openclash/luasrc/controller/*.lua
+sed -i 's/services/vpn/g' package/luci-app-openclash/luasrc/*.lua
+sed -i 's/services/vpn/g' package/luci-app-openclash/luasrc/model/cbi/openclash/*.lua
+sed -i 's/services/vpn/g' package/luci-app-openclash/luasrc/view/openclash/*.htm
 
 # 取消主题默认设置
 find package/luci-theme-*/* -type f -name '*luci-theme-*' -print -exec sed -i '/set luci.main.mediaurlbase/d' {} \;
