@@ -101,7 +101,7 @@ jobs:
       run: |
         chmod +x $FEEDS_ZERO
         cd $OPENWRT_PATH
-        $GITHUB_WORKSPACE/fees.sh
+        $GITHUB_WORKSPACE/feed.sh
         ./scripts/feeds update -a
         ./scripts/feeds install -a
         
