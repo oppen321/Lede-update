@@ -8,6 +8,7 @@ env:
   REPO_URL: https://github.com/coolsnowwolf/lede
   REPO_BRANCH: master
   CONFIG_FILE: configs/test.config
+  FEEDS_ZERO: feed.sh
   DIY_SCRIPT: diy-script.sh
   CLASH_KERNEL: amd64
   CACHE_TOOLCHAIN: true
@@ -99,6 +100,8 @@ jobs:
     - name: 安装源
       run: |
         cd $OPENWRT_PATH
+        chmod +x $FEEDS_Zero
+        $GITHUB_WORKSPACE/fees.sh
         ./scripts/feeds update -a
         ./scripts/feeds install -a
         
