@@ -99,7 +99,6 @@ jobs:
     - name: 安装源
       run: |
         cd $OPENWRT_PATH
-        echo -e "\nsrc-git Zero https://github.com/oppen321/Zero-IPK" >> feeds.conf.default
         ./scripts/feeds update -a
         ./scripts/feeds install -a
         
