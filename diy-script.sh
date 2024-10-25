@@ -77,9 +77,9 @@ echo -e "msgstr \"魔法网络\"" >> feeds/luci/modules/luci-base/po/zh_Hans/bas
 # 修改位置
 sed -i 's/\("admin"\), *\("netwizard"\)/\1, "system", \2/g' package/luci-app-netwizard/luasrc/controller/*.lua
 
-sed -i 's/services/vpn/g' package/luci-app-ssr-plus/luci-app-ssr-plus/luasrc/controller/*.lua
-sed -i 's/services/vpn/g' package/luci-app-ssr-plus/luci-app-ssr-plus/luasrc/model/cbi/shadowsocksr/*.lua
-sed -i 's/services/vpn/g' package/luci-app-ssr-plus/luci-app-ssr-plus/luasrc/view/shadowsocksr/*.htm
+sed -i 's/services/vpn/g' package/feeds/Zero/luci-app-ssr-plus/luasrc/controller/*.lua
+sed -i 's/services/vpn/g' package/feeds/Zero/luci-app-ssr-plus/luasrc/model/cbi/shadowsocksr/*.lua
+sed -i 's/services/vpn/g' package/feeds/Zero/luci-app-ssr-plus/luasrc/view/shadowsocksr/*.htm
 
 sed -i 's/services/vpn/g' package/feeds/Zero/luci-app-passwall/luasrc/controller/*.lua
 sed -i 's/services/vpn/g' package/feeds/Zero/luci-app-passwall/luasrc/passwall/*.lua
