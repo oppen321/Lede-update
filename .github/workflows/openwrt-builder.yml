@@ -99,8 +99,8 @@ jobs:
 
     - name: 安装源
       run: |
+        chmod +x $FEEDS_ZERO
         cd $OPENWRT_PATH
-        chmod +x $FEEDS_Zero
         $GITHUB_WORKSPACE/fees.sh
         ./scripts/feeds update -a
         ./scripts/feeds install -a
