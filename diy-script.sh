@@ -98,6 +98,9 @@ git clone --depth=1 https://github.com/sirpdboy/luci-app-netwizard package/luci-
 # 定时任务
 git clone --depth=1 https://github.com/sirpdboy/luci-app-autotimeset package/luci-app-autotimeset
 
+# 在线更新
+git clone --depth=1 https://github.com/oppen321/luci-app-gpsysupgrade package/luci-app-gpsysupgrade
+
 # luci-app-partexp
 git clone --depth=1 https://github.com/sirpdboy/luci-app-partexp package/luci-app-partexp
 
