@@ -178,7 +178,7 @@ sed -i 's/services/vpn/g' package/luci-app-openclash/luasrc/view/openclash/*.htm
 # 取消主题默认设置
 find package/luci-theme-*/* -type f -name '*luci-theme-*' -print -exec sed -i '/set luci.main.mediaurlbase/d' {} \;
 sed -i "s/online_wallpaper='bing'/online_wallpaper='none'/g" package/luci-app-argon-config/root/etc/uci-defaults/luci-argon-config
-sed -i "s/o\.default = 'bing';/o.default = 'none';/g" package/luci-app-argon-config/htdocs/luci-static/resources/view/argon-config.js
+sed -i "s/o\.default = 'bing';/o.default = 'Built-in';/g" package/luci-app-argon-config/htdocs/luci-static/resources/view/argon-config.js
 
 # 调整 V2ray服务器 到 VPN 菜单
 # sed -i 's/services/vpn/g' feeds/luci/applications/luci-app-v2ray-server/luasrc/controller/*.lua
