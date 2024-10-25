@@ -156,7 +156,7 @@ jobs:
         mv -f $OPENWRT_PATH/bin/packages/*/*/*.ipk packages
         tar -zcf Packages.tar.gz packages
         rm -rf packages feeds.buildinfo version.buildinfo
-        echo -n "${{ env.date1 }}" > version.txt
+        echo -n "${{ env.DATE }}" > version.txt
         [ -e release ] && cp release ./release.txt
         echo "KERNEL=$(cat *.manifest | grep ^kernel | cut -d- -f2 | tr -d ' ')" >> $GITHUB_ENV
         echo "FIRMWARE_PATH=$PWD" >> $GITHUB_ENV
@@ -172,7 +172,7 @@ jobs:
       if: steps.compile.outputs.status == 'success' && env.FIRMWARE_RELEASE == 'true'
       uses: ncipollo/release-action@v1
       with:
-        name: ${{ env.date1 }}_${{ matrix.FIRMWARE_TAG }}_${{ matrix.COMPILE_KERNEL }}
+        name: ${{ env.DATE }}_${{ matrix.FIRMWARE_TAG }}_${{ matrix.COMPILE_KERNEL }}
         allowUpdates: true
         tag: ${{ env.FIRMWARE_TAG }}
         token: ${{ secrets.TOKEN_OPPEN321 }}
