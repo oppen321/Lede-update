@@ -23,42 +23,10 @@ rm -rf feeds/packages/lang/golang
 find ./ | grep Makefile | grep v2ray-geodata | xargs rm -f
 find ./ | grep Makefile | grep mosdns | xargs rm -f
 
-# Git稀疏克隆，只克隆指定目录到本地
-function git_sparse_clone() {
-  branch="$1" repourl="$2" && shift 2
-  git clone --depth=1 -b $branch --single-branch --filter=blob:none --sparse $repourl
-  repodir=$(echo $repourl | awk -F '/' '{print $(NF)}')
-  cd $repodir && git sparse-checkout set $@
-  mv -f $@ ../package
-  cd .. && rm -rf $repodir
-}
 
 # golong1.23依赖
 #git clone --depth=1 https://github.com/sbwml/packages_lang_golang -b 22.x feeds/packages/lang/golang
 git clone https://github.com/sbwml/packages_lang_golang -b 23.x feeds/packages/lang/golang
-
-# 添加额外插件
-git clone --depth=1 https://github.com/kongfl888/luci-app-adguardhome package/luci-app-adguardhome
-git clone --depth=1 https://github.com/tty228/luci-app-wechatpush package/luci-app-serverchan
-git clone --depth=1 https://github.com/ilxp/luci-app-ikoolproxy package/luci-app-ikoolproxy
-git clone --depth=1 https://github.com/destan19/OpenAppFilter package/OpenAppFilter
-git clone --depth=1 https://github.com/Jason6111/luci-app-netdata package/luci-app-netdata
-git_sparse_clone main https://github.com/Lienol/openwrt-package luci-app-filebrowser luci-app-ssr-mudb-server
-git clone --depth=1 https://github.com/sirpdboy/luci-app-eqosplus package/luci-app-eqosplus
-git_sparse_clone main https://github.com/sirpdboy/sirpdboy-package luci-app-socat
-
-# 科学上网插件
-git clone --depth=1 -b master https://github.com/fw876/helloworld package/luci-app-ssr-plus
-git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall-packages package/openwrt-passwall
-git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall package/luci-app-passwall
-git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall2 package/luci-app-passwall2
-git_sparse_clone master https://github.com/vernesong/OpenClash luci-app-openclash
-
-# Themes
-git clone --depth=1 https://github.com/kiddin9/luci-theme-edge package/luci-theme-edge
-git clone --depth=1 https://github.com/jerrykuku/luci-theme-argon package/luci-theme-argon
-git clone --depth=1 https://github.com/jerrykuku/luci-app-argon-config package/luci-app-argon-config
-git clone --depth=1 https://github.com/xiaoqingfengATGH/luci-theme-infinityfreedom package/luci-theme-infinityfreedom
 
 
 # 更改 Argon 主题背景
@@ -67,42 +35,6 @@ cp -f $GITHUB_WORKSPACE/images/bg1.jpg package/luci-theme-argon/htdocs/luci-stat
 # 自定义设置
 cp -f $GITHUB_WORKSPACE/Diy/banner package/base-files/files/etc/banner
 
-# SmartDNS
-git clone --depth=1 https://github.com/pymumu/luci-app-smartdns package/luci-app-smartdns
-git clone --depth=1 https://github.com/pymumu/openwrt-smartdns package/smartdns
-
-# msd_lite
-git clone --depth=1 https://github.com/ximiTech/luci-app-msd_lite package/luci-app-msd_lite
-git clone --depth=1 https://github.com/ximiTech/msd_lite package/msd_lite
-
-# MosDNS
-git clone https://github.com/sbwml/luci-app-mosdns -b v5 package/mosdns
-git clone https://github.com/sbwml/v2ray-geodata package/v2ray-geodata
-
-# Alist
-git clone https://github.com/sbwml/luci-app-alist -b main package/alist
-
-# DDNS.go
-git clone --depth=1 https://github.com/sirpdboy/luci-app-ddns-go package/luci-app-ddns-go
-
-# iStore
-git_sparse_clone main https://github.com/linkease/istore-ui app-store-ui
-git_sparse_clone main https://github.com/linkease/istore luci
-
-# Lucky
-git clone --depth=1 https://github.com/sirpdboy/luci-app-lucky package/luci-app-lucky
-
-# 一键配置拨号
-git clone --depth=1 https://github.com/sirpdboy/luci-app-netwizard package/luci-app-netwizard
-
-# 定时任务
-git clone --depth=1 https://github.com/sirpdboy/luci-app-autotimeset package/luci-app-autotimeset
-
-# 在线更新
-git clone --depth=1 https://github.com/oppen321/luci-app-gpsysupgrade package/luci-app-gpsysupgrade
-
-# luci-app-partexp
-git clone --depth=1 https://github.com/sirpdboy/luci-app-partexp package/luci-app-partexp
 
 # x86 型号只显示 CPU 型号
 sed -i 's/${g}.*/${a}${b}${c}${d}${e}${f}${hydrid}/g' package/lean/autocore/files/x86/autocore
@@ -149,37 +81,37 @@ sed -i 's/services/vpn/g' package/luci-app-ssr-plus/luci-app-ssr-plus/luasrc/con
 sed -i 's/services/vpn/g' package/luci-app-ssr-plus/luci-app-ssr-plus/luasrc/model/cbi/shadowsocksr/*.lua
 sed -i 's/services/vpn/g' package/luci-app-ssr-plus/luci-app-ssr-plus/luasrc/view/shadowsocksr/*.htm
 
-sed -i 's/services/vpn/g' package/luci-app-passwall/luci-app-passwall/luasrc/controller/*.lua
-sed -i 's/services/vpn/g' package/luci-app-passwall/luci-app-passwall/luasrc/passwall/*.lua
-sed -i 's/services/vpn/g' package/luci-app-passwall/luci-app-passwall/luasrc/model/cbi/passwall/client/*.lua
-sed -i 's/services/vpn/g' package/luci-app-passwall/luci-app-passwall/luasrc/model/cbi/passwall/server/*.lua
-sed -i 's/services/vpn/g' package/luci-app-passwall/luci-app-passwall/luasrc/view/passwall/app_update/*.htm
-sed -i 's/services/vpn/g' package/luci-app-passwall/luci-app-passwall/luasrc/view/passwall/socks_auto_switch/*.htm
-sed -i 's/services/vpn/g' package/luci-app-passwall/luci-app-passwall/luasrc/view/passwall/global/*.htm
-sed -i 's/services/vpn/g' package/luci-app-passwall/luci-app-passwall/luasrc/view/passwall/haproxy/*.htm
-sed -i 's/services/vpn/g' package/luci-app-passwall/luci-app-passwall/luasrc/view/passwall/log/*.htm
-sed -i 's/services/vpn/g' package/luci-app-passwall/luci-app-passwall/luasrc/view/passwall/node_list/*.htm
-sed -i 's/services/vpn/g' package/luci-app-passwall/luci-app-passwall/luasrc/view/passwall/rule/*.htm
-sed -i 's/services/vpn/g' package/luci-app-passwall/luci-app-passwall/luasrc/view/passwall/server/*.htm
-sed -i 's/services/vpn/g' package/luci-app-passwall/luci-app-passwall/luasrc/view/passwall/rule_list/*.htm
+sed -i 's/services/vpn/g' package/feeds/Zero/luci-app-passwall/luasrc/controller/*.lua
+sed -i 's/services/vpn/g' package/feeds/Zero/luci-app-passwall/luasrc/passwall/*.lua
+sed -i 's/services/vpn/g' package/feeds/Zero/luci-app-passwall/luasrc/model/cbi/passwall/client/*.lua
+sed -i 's/services/vpn/g' package/feeds/Zero/luci-app-passwall/luasrc/model/cbi/passwall/server/*.lua
+sed -i 's/services/vpn/g' package/feeds/Zero/luci-app-passwall/luasrc/view/passwall/app_update/*.htm
+sed -i 's/services/vpn/g' package/feeds/Zero/luci-app-passwall/luasrc/view/passwall/socks_auto_switch/*.htm
+sed -i 's/services/vpn/g' package/feeds/Zero/luci-app-passwall/luasrc/view/passwall/global/*.htm
+sed -i 's/services/vpn/g' package/feeds/Zero/luci-app-passwall/luasrc/view/passwall/haproxy/*.htm
+sed -i 's/services/vpn/g' package/feeds/Zero/luci-app-passwall/luasrc/view/passwall/log/*.htm
+sed -i 's/services/vpn/g' package/feeds/Zero/luci-app-passwall/luasrc/view/passwall/node_list/*.htm
+sed -i 's/services/vpn/g' package/feeds/Zero/luci-app-passwall/luasrc/view/passwall/rule/*.htm
+sed -i 's/services/vpn/g' package/feeds/Zero/luci-app-passwall/luasrc/view/passwall/server/*.htm
+sed -i 's/services/vpn/g' package/feeds/Zero/luci-app-passwall/luasrc/view/passwall/rule_list/*.htm
 
-sed -i 's/services/vpn/g' package/luci-app-passwall2/luci-app-passwall2/luasrc/controller/*.lua
-sed -i 's/services/vpn/g' package/luci-app-passwall2/luci-app-passwall2/luasrc/passwall2/*.lua
-sed -i 's/services/vpn/g' package/luci-app-passwall2/luci-app-passwall2/luasrc/model/cbi/passwall2/client/*.lua
-sed -i 's/services/vpn/g' package/luci-app-passwall2/luci-app-passwall2/luasrc/model/cbi/passwall2/server/*.lua
-sed -i 's/services/vpn/g' package/luci-app-passwall2/luci-app-passwall2/luasrc/view/passwall2/app_update/*.htm
-sed -i 's/services/vpn/g' package/luci-app-passwall2/luci-app-passwall2/luasrc/view/passwall2/socks_auto_switch/*.htm
-sed -i 's/services/vpn/g' package/luci-app-passwall2/luci-app-passwall2/luasrc/view/passwall2/global/*.htm
-sed -i 's/services/vpn/g' package/luci-app-passwall2/luci-app-passwall2/luasrc/view/passwall2/haproxy/*.htm
-sed -i 's/services/vpn/g' package/luci-app-passwall2/luci-app-passwall2/luasrc/view/passwall2/log/*.htm
-sed -i 's/services/vpn/g' package/luci-app-passwall2/luci-app-passwall2/luasrc/view/passwall2/node_list/*.htm
-sed -i 's/services/vpn/g' package/luci-app-passwall2/luci-app-passwall2/luasrc/view/passwall2/rule/*.htm
-sed -i 's/services/vpn/g' package/luci-app-passwall2/luci-app-passwall2/luasrc/view/passwall2/server/*.htm
+sed -i 's/services/vpn/g' package/feeds/Zero/luci-app-passwall2/luasrc/controller/*.lua
+sed -i 's/services/vpn/g' package/feeds/Zero/luci-app-passwall2/luasrc/passwall2/*.lua
+sed -i 's/services/vpn/g' package/feeds/Zero/luci-app-passwall2/luasrc/model/cbi/passwall2/client/*.lua
+sed -i 's/services/vpn/g' package/feeds/Zero/luci-app-passwall2/luasrc/model/cbi/passwall2/server/*.lua
+sed -i 's/services/vpn/g' package/feeds/Zero/luci-app-passwall2/luasrc/view/passwall2/app_update/*.htm
+sed -i 's/services/vpn/g' package/feeds/Zero/luci-app-passwall2/luasrc/view/passwall2/socks_auto_switch/*.htm
+sed -i 's/services/vpn/g' package/feeds/Zero/luci-app-passwall2/luasrc/view/passwall2/global/*.htm
+sed -i 's/services/vpn/g' package/feeds/Zero/luci-app-passwall2/luasrc/view/passwall2/haproxy/*.htm
+sed -i 's/services/vpn/g' package/feeds/Zero/luci-app-passwall2/luasrc/view/passwall2/log/*.htm
+sed -i 's/services/vpn/g' package/feeds/Zero/luci-app-passwall2/luasrc/view/passwall2/node_list/*.htm
+sed -i 's/services/vpn/g' package/feeds/Zero/luci-app-passwall2/luasrc/view/passwall2/rule/*.htm
+sed -i 's/services/vpn/g' package/feeds/Zero/luci-app-passwall2/luasrc/view/passwall2/server/*.htm
 
-sed -i 's/services/vpn/g' package/luci-app-openclash/luasrc/controller/*.lua
-sed -i 's/services/vpn/g' package/luci-app-openclash/luasrc/*.lua
-sed -i 's/services/vpn/g' package/luci-app-openclash/luasrc/model/cbi/openclash/*.lua
-sed -i 's/services/vpn/g' package/luci-app-openclash/luasrc/view/openclash/*.htm
+sed -i 's/services/vpn/g' package/feeds/Zero/luci-app-openclash/luasrc/controller/*.lua
+sed -i 's/services/vpn/g' package/feeds/Zero/luci-app-openclash/luasrc/*.lua
+sed -i 's/services/vpn/g' package/feeds/Zero/luci-app-openclash/luasrc/model/cbi/openclash/*.lua
+sed -i 's/services/vpn/g' package/feeds/Zero/luci-app-openclash/luasrc/view/openclash/*.htm
 
 # 取消主题默认设置
 find package/luci-theme-*/* -type f -name '*luci-theme-*' -print -exec sed -i '/set luci.main.mediaurlbase/d' {} \;
