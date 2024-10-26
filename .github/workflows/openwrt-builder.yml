@@ -140,55 +140,70 @@ jobs:
       if: (!cancelled())
       run: df -hT
 
-    - name: 上传Bin目录
-      if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
-      uses: actions/upload-artifact@main
-      with:
-        name: ${{ env.SOURCE_REPO }}-bin-${{ env.DEVICE_TARGET }}-${{ env.DEVICE_SUBTARGET }}-${{ env.FILE_DATE }}
-        path: ${{ env.OPENWRT_PATH }}/bin
+    - name: 重命名文件
+      if: steps.compile.outputs.status == 'success' && !cancelled()
+      run: |
+        find $OPENWRT_PATH/bin/targets -type f \( -name "openwrt*.gz" \) -exec sh -c 'mv "$1" "$(dirname "$1")/${{ env.DATE }}-${{ env.FIRMWARE_TAG }}-$(basename "$1")"' sh {} \; 2>/dev/null || true
 
     - name: 整理文件
-      if: steps.compile.outputs.status == 'success'
+      id: organize
+      if: steps.compile.outputs.status == 'success' && !cancelled()
       run: |
-        cd $OPENWRT_PATH/bin/targets/*/*
-        cat sha256sums
-        cp $OPENWRT_PATH/.config build.config
-        mv -f $OPENWRT_PATH/bin/packages/*/*/*.ipk packages
-        tar -zcf Packages.tar.gz packages
-        rm -rf packages feeds.buildinfo version.buildinfo
-        echo -n "${{ env.DATE }}" > version.txt  # 这里写入 DATE 变量的值
-        [ -e release ] && cp release ./release.txt  # 如果 release 文件存在，则复制它
-        echo "KERNEL=$(cat *.manifest | grep ^kernel | cut -d- -f2 | tr -d ' ')" >> $GITHUB_ENV
-        echo "FIRMWARE_PATH=$PWD" >> $GITHUB_ENV
+        mkdir -p firmware
+        mkdir -p firmware/package/
+        find $OPENWRT_PATH/bin/targets/ -type f \( -name "*squashfs-combined*.gz" -o -name "*sysupgrade*" \) -exec mv {} ./firmware/ \; 2>/dev/null || true
+        find $OPENWRT_PATH/bin/packages/ -type f \( -name "*.ipk" \) -exec mv {} ./firmware/package/ \; 2>/dev/null || true
+        mv $OPENWRT_PATH/.config ./firmware/${{ env.FIRMWARE_TAG }}_${{ env.COMPILE_KERNEL }}.config 2>/dev/null || true
+        mv $OPENWRT_PATH/build_dir/target-*/linux-*/linux-*/.config ./firmware/${{ env.FIRMWARE_TAG }}_${{ env.COMPILE_KERNEL }}_kernel.config 2>/dev/null || true
+        [ -e release ] && cp release ./firmware/release.txt
+        cd firmware
+        echo -n "${{ env.DATE }}" > version.txt
+        md5=$(md5sum *squashfs-combined.img.gz | awk '{print $1}') 2>/dev/null || true
+        md5_efi=$(md5sum *squashfs-combined-efi.img.gz | awk '{print $1}') 2>/dev/null || true
+        echo "md5=$md5" > md5sum.txt
+        echo "md5_efi=$md5_efi" >> md5sum.txt
+        rm -rf sha256sums
+        echo "status=success" >> $GITHUB_OUTPUT
 
-    - name: 上传固件到Artifact
-      if: steps.compile.outputs.status == 'success' && env.FIRMWARE_RELEASE != 'true'
+    - name: 上传artifact固件目录
       uses: actions/upload-artifact@main
-      with:
-        name: ${{ env.SOURCE_REPO }}-firmware-${{ env.DEVICE_TARGET }}-${{ env.DEVICE_SUBTARGET }}-${{ env.FILE_DATE }}
-        path: ${{ env.FIRMWARE_PATH }}
-
-    - name: 上传固件以发布
-      if: steps.compile.outputs.status == 'success' && env.FIRMWARE_RELEASE == 'true'
-      uses: ncipollo/release-action@v1
+      if: steps.organize.outputs.status == 'success' && env.UPLOAD_FIRMWARE == 'true' && !cancelled()
       with:
         name: ${{ env.DATE }}_${{ env.FIRMWARE_TAG }}_${{ env.COMPILE_KERNEL }}
-        allowUpdates: true
-        tag: ${{ env.FIRMWARE_TAG }}
+        path: ./firmware/**
+
+    - name: 生成releases发布标签
+      id: tag
+      if: steps.organize.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true' && !cancelled()
+      run: |
+        echo "release_tag=${{ env.DATE }}" >> $GITHUB_OUTPUT
+        [ -e release ] && cp release ./release.txt
+        echo "status=success" >> $GITHUB_OUTPUT
+
+    - name: 上传releases固件发布
+      uses: softprops/action-gh-release@master
+      if: steps.organize.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true' && !cancelled()
+      env:
+        GITHUB_TOKEN: ${{ secrets.TOKEN_OPPEN321 }}
+      with:
+        files: ./firmware/*.*
+        name: ${{ env.DATE }}_${{ env.FIRMWARE_TAG }}_${{ env.COMPILE_KERNEL }}
+        tag_name: ${{ env.FIRMWARE_TAG }}_${{ env.COMPILE_KERNEL }}
+        body_path: release.txt
+
+    - name: 删除workflow工作流
+      uses: Mattraks/delete-workflow-runs@main
+      with:
         token: ${{ secrets.TOKEN_OPPEN321 }}
-        artifacts: ${{ env.FIRMWARE_PATH }}/*
-        body: |
-          **This is OpenWrt Firmware for ${{ env.FIRMWARE_TAG }}**
-          ### 📒 固件信息
-          - 💻 平台架构: ${{ env.DEVICE_TARGET }}-${{ env.DEVICE_SUBTARGET }}
-          - ⚽ 固件源码: ${{ env.REPO_URL }}
-          - 💝 源码分支: ${{ env.REPO_BRANCH }}
-          - 🚀 内核版本: ${{ env.KERNEL }}
-          - 🌐 默认地址: 10.0.0.1
-          - 🔑 默认密码: password
-          ### 🧊 固件版本
-          - 固件编译前最后一次➦[主源码](${{ env.REPO_URL }})更新记录
-          - ${{ env.COMMIT_AUTHOR }}
-          - ${{ env.COMMIT_DATE }}
-          - ${{ env.COMMIT_MESSAGE }}
-          - ${{ env.COMMIT_HASH }}
+        repository: ${{ github.repository }}
+        retain_days: 1
+        keep_minimum_runs: 1
+
+    - name: 删除releases旧版本
+      uses: dev-drprasad/delete-older-releases@master
+      if: env.UPLOAD_RELEASE == 'true' && !cancelled()
+      env:
+        GITHUB_TOKEN: ${{ secrets.TOKEN_OPPEN321 }}
+      with:
+        keep_latest: 5
+        delete_tags: true
