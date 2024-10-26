@@ -1,5 +1,11 @@
 #!/bin/bash
 
+## Zero源
+echo -e "\nsrc-git Zero https://github.com/oppen321/Zero-IPK" >> feeds.conf.default
+
+./scripts/feeds update -a
+./scripts/feeds install -a
+
 # 修改默认IP
 sed -i 's/192.168.1.1/10.0.0.1/g' package/base-files/luci2/bin/config_generate
 sed -i 's/192.168.1.1/10.0.0.1/g' package/base-files/files/bin/config_generate
