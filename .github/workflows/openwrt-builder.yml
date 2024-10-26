@@ -99,9 +99,7 @@ jobs:
 
     - name: 安装源
       run: |
-        chmod +x $FEEDS_ZERO
         cd $OPENWRT_PATH
-        $GITHUB_WORKSPACE/feed.sh
         ./scripts/feeds update -a
         ./scripts/feeds install -a
         
@@ -110,6 +108,7 @@ jobs:
         [ -e files ] && mv files $OPENWRT_PATH/files
         [ -e $CONFIG_FILE ] && mv $CONFIG_FILE $OPENWRT_PATH/.config
         chmod +x $GITHUB_WORKSPACE/scripts/*.sh
+        chmod +x $FEEDS_ZERO
         chmod +x $DIY_SCRIPT
         cd $OPENWRT_PATH
         $GITHUB_WORKSPACE/$DIY_SCRIPT
