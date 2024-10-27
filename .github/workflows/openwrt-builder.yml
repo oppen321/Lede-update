@@ -11,9 +11,9 @@ on:
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede
   REPO_BRANCH: master
-  FEEDS_CONF: configs/test.config
+  FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: x86_64.config
-  DIY_P1_SH: diy-part1.sh
+  DIY_P1_SH: diy-script.sh
   DIY_P2_SH: diy-part2_6.6.sh
   REVERT_COMMIT: false
   UPLOAD_FIRMWARE: false
