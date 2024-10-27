@@ -69,7 +69,7 @@ git clone --depth=1 https://github.com/sirpdboy/luci-app-eqosplus package/luci-a
 git_sparse_clone main https://github.com/sirpdboy/sirpdboy-package luci-app-socat
 
 # 科学上网插件
-sed -i '2i src-git small https://github.com/kenzok8/small' feeds.conf.default
+
 
 
 # Themes
