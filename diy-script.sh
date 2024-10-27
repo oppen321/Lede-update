@@ -23,10 +23,6 @@ rm -rf feeds/packages/lang/golang
 find ./ | grep Makefile | grep v2ray-geodata | xargs rm -f
 find ./ | grep Makefile | grep mosdns | xargs rm -f
 
-sed -i '2i src-git small https://github.com/kenzok8/small' feeds.conf.default
-./scripts/feeds update -a
-./scripts/feeds install -a
-
 # golong1.23依赖
 #git clone --depth=1 https://github.com/sbwml/packages_lang_golang -b 22.x feeds/packages/lang/golang
 git clone https://github.com/sbwml/packages_lang_golang -b 23.x feeds/packages/lang/golang
@@ -69,7 +65,11 @@ git clone --depth=1 https://github.com/sirpdboy/luci-app-eqosplus package/luci-a
 git_sparse_clone main https://github.com/sirpdboy/sirpdboy-package luci-app-socat
 
 # 科学上网插件
-
+git clone --depth=1 -b master https://github.com/fw876/helloworld package/luci-app-ssr-plus
+git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall-packages package/openwrt-passwall
+git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall package/luci-app-passwall
+git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall2 package/luci-app-passwall2
+git_sparse_clone master https://github.com/vernesong/OpenClash luci-app-openclash
 
 
 # Themes
