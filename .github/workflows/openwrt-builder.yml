@@ -167,14 +167,14 @@ jobs:
 
     - name: 上传artifact固件目录
       uses: actions/upload-artifact@main
-      if: steps.organize.outputs.status == 'success' && env.UPLOAD_FIRMWARE == 'true' && !cancelled()
+      if: steps.organize.outputs.status == 'success' && env.FIRMWARE_RELEASE == 'true' && !cancelled()
       with:
         name: ${{ env.DATE }}_${{ env.FIRMWARE_TAG }}_${{ env.COMPILE_KERNEL }}
         path: ./firmware/**
 
     - name: 生成releases发布标签
       id: tag
-      if: steps.organize.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true' && !cancelled()
+      if: steps.organize.outputs.status == 'success' && env.FIRMWARE_RELEASE == 'true' && !cancelled()
       run: |
         echo "release_tag=${{ env.DATE }}" >> $GITHUB_OUTPUT
         [ -e release ] && cp release ./release.txt
@@ -182,7 +182,7 @@ jobs:
 
     - name: 上传releases固件发布
       uses: softprops/action-gh-release@master
-      if: steps.organize.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true' && !cancelled()
+      if: steps.organize.outputs.status == 'success' && env.FIRMWARE_RELEASE == 'true' && !cancelled()
       env:
         GITHUB_TOKEN: ${{ secrets.TOKEN_OPPEN321 }}
       with:
@@ -201,7 +201,7 @@ jobs:
 
     - name: 删除releases旧版本
       uses: dev-drprasad/delete-older-releases@master
-      if: env.UPLOAD_RELEASE == 'true' && !cancelled()
+      if: env.FIRMWARE_RELEASE == 'true' && !cancelled()
       env:
         GITHUB_TOKEN: ${{ secrets.TOKEN_OPPEN321 }}
       with:
