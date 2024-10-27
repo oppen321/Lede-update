@@ -62,12 +62,6 @@ jobs:
     - name: 查看
       uses: actions/checkout@main
 
-    - name: 设置当前的日期
-      id: date
-      run: |
-        sudo timedatectl set-timezone "$TZ"
-        echo "DATE=$(date +'%Y%m%d')" >> $GITHUB_ENV
-
     - name: 克隆源代码
       run: |
         df -hT $GITHUB_WORKSPACE
