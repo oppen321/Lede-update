@@ -90,7 +90,7 @@ jobs:
     - name: 执行回滚
       if: env.REVERT_COMMIT == 'true' && !cancelled()
       run: |
-        cd $(curl -fsSL https://raw.githubusercontent.com/ywt114/diy/main/directory | tr '\n' ' ')
+        cd $(curl -fsSL https://raw.githubusercontent.com/oppen321/Lede-update/refs/heads/main/directory | tr '\n' ' ')
         git reset --hard $(curl -fsSL https://raw.githubusercontent.com/ywt114/diy/main/commit | tr '\n' ' ')
 
     - name: 安装 feeds
