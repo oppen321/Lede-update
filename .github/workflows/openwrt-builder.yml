@@ -15,6 +15,7 @@ env:
   CONFIG_FILE: configs/test.config
   DIY_P1_SH: diy-script.sh
   DIY_P2_SH: diy-test.sh
+  SCRIPTS: scripts
   REVERT_COMMIT: false
   UPLOAD_FIRMWARE: false
   UPLOAD_RELEASE: true
@@ -79,8 +80,12 @@ jobs:
       run: |
         [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
         chmod +x $DIY_P1_SH
+        chmod +x $GITHUB_WORKSPACE/scripts/*.sh
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P1_SH
+        $GITHUB_WORKSPACE/scripts/preset-clash-core.sh $CLASH_KERNEL
+        $GITHUB_WORKSPACE/scripts/preset-terminal-tools.sh
+        $GITHUB_WORKSPACE/scripts/preset-adguard-core.sh $CLASH_KERNEL
 
     - name: 更新 feeds
       working-directory: ./openwrt
