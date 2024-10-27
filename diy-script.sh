@@ -1,7 +1,4 @@
 #!/bin/bash
-sed -i '2i src-git small https://github.com/kenzok8/small' feeds.conf.default
-./scripts/feeds update -a
-./scripts/feeds install -a
 
 # 修改默认IP
 sed -i 's/192.168.1.1/10.0.0.1/g' package/base-files/luci2/bin/config_generate
@@ -25,6 +22,10 @@ rm -rf feeds/luci/applications/luci-app-serverchan
 rm -rf feeds/packages/lang/golang
 find ./ | grep Makefile | grep v2ray-geodata | xargs rm -f
 find ./ | grep Makefile | grep mosdns | xargs rm -f
+
+sed -i '2i src-git small https://github.com/kenzok8/small' feeds.conf.default
+./scripts/feeds update -a
+./scripts/feeds install -a
 
 # golong1.23依赖
 #git clone --depth=1 https://github.com/sbwml/packages_lang_golang -b 22.x feeds/packages/lang/golang
