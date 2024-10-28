@@ -167,14 +167,14 @@ jobs:
 
     - name: 上传artifact固件目录
       uses: actions/upload-artifact@main
-      if: steps.organize.outputs.status == 'success' && ${{ env.FIRMWARE_TAG }} == 'true' && !cancelled()
+      if: steps.organize.outputs.status == 'success' && ${{ FIRMWARE_RELEASE }} == 'true' && !cancelled()
       with:
         name: ${{ env.DATE }}_${{ env.FIRMWARE_TAG }}_${{ env.VERSION }}
         path: ./firmware/**
 
     - name: 生成releases发布标签
       id: tag
-      if: steps.organize.outputs.status == 'success' && ${{ env.FIRMWARE_TAG }} == 'true' && !cancelled()
+      if: steps.organize.outputs.status == 'success' && ${{ FIRMWARE_RELEASE }} == 'true' && !cancelled()
       run: |
         echo "release_tag=${{ env.DATE }}" >> $GITHUB_OUTPUT
         [ -e release ] && cp release ./release.txt
@@ -182,7 +182,7 @@ jobs:
 
     - name: 上传releases固件发布
       uses: softprops/action-gh-release@master
-      if: steps.organize.outputs.status == 'success' && ${{ env.FIRMWARE_TAG }} == 'true' && !cancelled()
+      if: steps.organize.outputs.status == 'success' && ${{ FIRMWARE_RELEASE }} == 'true' && !cancelled()
       env:
         GITHUB_TOKEN: ${{ secrets.TOKEN_OPPEN321 }}
       with:
