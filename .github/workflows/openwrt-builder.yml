@@ -143,7 +143,7 @@ jobs:
     - name: 重命名文件
       if: steps.compile.outputs.status == 'success' && !cancelled()
       run: |
-        find openwrt/bin/targets -type f \( -name "openwrt*.gz" \) -exec sh -c 'mv "$1" "$(dirname "$1")/${{ env.date1 }}-${{ matrix.target.kernel }}-$(basename "$1")"' sh {} \; 2>/dev/null || true
+        find openwrt/bin/targets -type f \( -name "openwrt*.gz" \) -exec sh -c 'mv "$1" "$(dirname "$1")/${{ env.DATE }}-${{ env.FIRMWARE_TAG }}-$(basename "$1")"' sh {} \; 2>/dev/null || true
 
     - name: 整理文件
       id: organize
@@ -187,7 +187,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.TOKEN_OPPEN321 }}
       with:
         files: ./firmware/*.*
-        name: ${{ env.date1 }}_${{ matrix.target.arch }}_${{ matrix.target.kernel }}
+        name: ${{ env.DATE }}_${{ env.FIRMWARE_TAG }}_${{ env.VERSION }}
         tag_name: ${{ env.FIRMWARE_TAG }}_${{ env.VERSION }}
         body_path: release.txt
 
@@ -201,7 +201,7 @@ jobs:
 
     - name: 删除releases旧版本
       uses: dev-drprasad/delete-older-releases@master
-      if: env.UPLOAD_RELEASE == 'true' && !cancelled()
+      if: env.FIRMWARE_RELEASE == 'true' && !cancelled()
       env:
         GITHUB_TOKEN: ${{ secrets.TOKEN_OPPEN321 }}
       with:
