@@ -77,6 +77,16 @@ jobs:
         sed -i "s/KERNEL_PATCHVER:=*.*/KERNEL_PATCHVER:=${{ matrix.target.kernel }}/g" openwrt/target/linux/${{ matrix.target.target }}/Makefile
         sed -i "s/KERNEL_TESTING_PATCHVER:=*.*/KERNEL_TESTING_PATCHVER:=${{ matrix.target.kernel }}/g" openwrt/target/linux/${{ matrix.target.target }}/Makefile
 
+    - name: 更新 feeds
+      working-directory: ./openwrt
+      run: |
+        ./scripts/feeds update -a
+
+    - name: 安装 feeds
+      working-directory: ./openwrt
+      run: |
+        ./scripts/feeds install -a
+        
     - name: 自定义配置feeds
       run: |
         [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
@@ -87,16 +97,6 @@ jobs:
         $GITHUB_WORKSPACE/scripts/preset-clash-core.sh $CLASH_KERNEL
         $GITHUB_WORKSPACE/scripts/preset-terminal-tools.sh
         $GITHUB_WORKSPACE/scripts/preset-adguard-core.sh $CLASH_KERNEL
-
-    - name: 更新 feeds
-      working-directory: ./openwrt
-      run: |
-        ./scripts/feeds update -a
-
-    - name: 安装 feeds
-      working-directory: ./openwrt
-      run: |
-        ./scripts/feeds install -a
 
     - name: 自定义配置
       run: |
