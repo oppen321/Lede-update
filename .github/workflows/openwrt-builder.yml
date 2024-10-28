@@ -151,10 +151,10 @@ jobs:
       run: |
         mkdir -p firmware
         mkdir -p firmware/package/
-        find openwrt/bin/targets/ -type f \( -name "*squashfs-combined*.gz" -o -name "*sysupgrade*" \) -exec mv {} ./firmware/ \; 2>/dev/null || true
-        find openwrt/bin/packages/ -type f \( -name "*.ipk" \) -exec mv {} ./firmware/package/ \; 2>/dev/null || true
-        mv openwrt/.config ./firmware/${{ env.FIRMWARE_TAG }}_${{ env.VERSION }}.config 2>/dev/null || true
-        mv openwrt/build_dir/target-*/linux-*/linux-*/.config ./firmware/${{ env.FIRMWARE_TAG }}_${{ env.VERSION }}_kernel.config 2>/dev/null || true
+        find $OPENWRT_PATH/bin/targets/ -type f \( -name "*squashfs-combined*.gz" -o -name "*sysupgrade*" \) -exec mv {} ./firmware/ \; 2>/dev/null || true
+        find $OPENWRT_PATH/bin/packages/ -type f \( -name "*.ipk" \) -exec mv {} ./firmware/package/ \; 2>/dev/null || true
+        mv $OPENWRT_PATH/.config ./firmware/${{ env.FIRMWARE_TAG }}_${{ env.VERSION }}.config 2>/dev/null || true
+        mv $OPENWRT_PATH/build_dir/target-*/linux-*/linux-*/.config ./firmware/${{ env.FIRMWARE_TAG }}_${{ env.VERSION }}_kernel.config 2>/dev/null || true
         [ -e release ] && cp release ./firmware/release.txt
         cd firmware
         echo -n "${{ env.DATE }}" > version.txt
@@ -194,7 +194,7 @@ jobs:
     - name: 删除workflow工作流
       uses: Mattraks/delete-workflow-runs@main
       with:
-        token: ${{ secrets.TOKEN_TOKEN_OPPEN321 }}
+        token: ${{ secrets.TOKEN_OPPEN321 }}
         repository: ${{ github.repository }}
         retain_days: 1
         keep_minimum_runs: 1
