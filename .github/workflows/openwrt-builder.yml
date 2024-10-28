@@ -16,6 +16,7 @@ env:
   FIRMWARE_RELEASE: true
   FIRMWARE_TAG: X86_64
   TZ: Asia/Shanghai
+  VERSION: 6.6
 
 jobs:
   Build:
