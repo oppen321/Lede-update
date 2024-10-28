@@ -54,13 +54,15 @@ jobs:
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
-        sudo -E rm -rf "$AGENT_TOOLSDIRECTORY" || true
-        sudo -E apt -yqq update
-        sudo -E apt -yqq full-upgrade
-        sudo -E apt -yqq install $(curl -fsSL https://raw.githubusercontent.com/oppen321/Lede-update/refs/heads/main/depends/ubuntu-22.04 | tr '\n' ' ') || true
-        sudo -E apt -yqq autoremove --purge
-        sudo -E apt -yqq autoclean
-        sudo -E systemctl daemon-reload
+        docker rmi $(docker images -q)
+        sudo rm -rf /usr/share/dotnet /etc/apt/sources.list.d /usr/local/lib/android $AGENT_TOOLSDIRECTORY
+        sudo -E apt-get -y purge azure-cli ghc* zulu* llvm* firefox google* dotnet* powershell openjdk* mongodb* moby* || true
+        sudo -E apt-get -y update
+        sudo -E apt-get -y install rename $(curl -fsSL is.gd/cXklVO)
+        sudo -E apt-get -y autoremove --purge
+        sudo -E apt-get -y clean
+        sudo -E apt-get -y install clang
+        sudo timedatectl set-timezone "$TZ"
 
         df -hT
 
