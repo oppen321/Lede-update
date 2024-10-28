@@ -133,60 +133,77 @@ jobs:
         echo -e "$(nproc) thread compile"
         make -j$(nproc) || make -j1 || make -j1 V=s
         echo "status=success" >> $GITHUB_OUTPUT
-        echo "DATE=$(date +"%Y-%m-%d %H:%M:%S")" >> $GITHUB_ENV
-        echo "FILE_DATE=$(date +"%Y.%m.%d")" >> $GITHUB_ENV
+        echo "DATE=$(date +"%Y%m%d")" >> $GITHUB_ENV
+        echo "FILE_DATE=$(date +"%Y%m%d")" >> $GITHUB_ENV
 
     - name: Check Space Usage
       if: (!cancelled())
       run: df -hT
 
-    - name: Upload Bin Directory
-      if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
-      uses: actions/upload-artifact@main
-      with:
-        name: ${{ env.SOURCE_REPO }}-bin-${{ env.DEVICE_TARGET }}-${{ env.DEVICE_SUBTARGET }}-${{ env.FILE_DATE }}
-        path: ${{ env.OPENWRT_PATH }}/bin
-
-    - name: Organize Files
-      if: steps.compile.outputs.status == 'success'
+    - name: 重命名文件
+      if: steps.compile.outputs.status == 'success' && !cancelled()
       run: |
-        cd $OPENWRT_PATH/bin/targets/*/*
-        cat sha256sums
-        cp $OPENWRT_PATH/.config build.config
-        mv -f $OPENWRT_PATH/bin/packages/*/*/*.ipk packages
-        tar -zcf Packages.tar.gz packages
-        rm -rf packages feeds.buildinfo version.buildinfo
-        echo "KERNEL=$(cat *.manifest | grep ^kernel | cut -d- -f2 | tr -d ' ')" >> $GITHUB_ENV
-        echo "FIRMWARE_PATH=$PWD" >> $GITHUB_ENV
+        find openwrt/bin/targets -type f \( -name "openwrt*.gz" \) -exec sh -c 'mv "$1" "$(dirname "$1")/${{ env.date1 }}-${{ matrix.target.kernel }}-$(basename "$1")"' sh {} \; 2>/dev/null || true
 
-    - name: Upload Firmware To Artifact
-      if: steps.compile.outputs.status == 'success' && env.FIRMWARE_RELEASE != 'true'
+    - name: 整理文件
+      id: organize
+      if: steps.compile.outputs.status == 'success' && !cancelled()
+      run: |
+        mkdir -p firmware
+        mkdir -p firmware/package/
+        find openwrt/bin/targets/ -type f \( -name "*squashfs-combined*.gz" -o -name "*sysupgrade*" \) -exec mv {} ./firmware/ \; 2>/dev/null || true
+        find openwrt/bin/packages/ -type f \( -name "*.ipk" \) -exec mv {} ./firmware/package/ \; 2>/dev/null || true
+        mv openwrt/.config ./firmware/${{ env.FIRMWARE_TAG }}_${{ env.VERSION }}.config 2>/dev/null || true
+        mv openwrt/build_dir/target-*/linux-*/linux-*/.config ./firmware/${{ env.FIRMWARE_TAG }}_${{ env.VERSION }}_kernel.config 2>/dev/null || true
+        [ -e release ] && cp release ./firmware/release.txt
+        cd firmware
+        echo -n "${{ env.DATE }}" > version.txt
+        md5=$(md5sum *squashfs-combined.img.gz | awk '{print $1}') 2>/dev/null || true
+        md5_efi=$(md5sum *squashfs-combined-efi.img.gz | awk '{print $1}') 2>/dev/null || true
+        echo "md5=$md5" > md5sum.txt
+        echo "md5_efi=$md5_efi" >> md5sum.txt
+        rm -rf sha256sums
+        echo "status=success" >> $GITHUB_OUTPUT
+
+    - name: 上传artifact固件目录
       uses: actions/upload-artifact@main
+      if: steps.organize.outputs.status == 'success' && FIRMWARE_RELEASE == 'true' && !cancelled()
       with:
-        name: ${{ env.SOURCE_REPO }}-firmware-${{ env.DEVICE_TARGET }}-${{ env.DEVICE_SUBTARGET }}-${{ env.FILE_DATE }}
-        path: ${{ env.FIRMWARE_PATH }}
+        name: ${{ env.DATE }}_${{ env.FIRMWARE_TAG }}_${{ env.VERSION }}
+        path: ./firmware/**
 
-    - name: Upload Firmware To Release
-      if: steps.compile.outputs.status == 'success' && env.FIRMWARE_RELEASE == 'true'
-      uses: ncipollo/release-action@v1
+    - name: 生成releases发布标签
+      id: tag
+      if: steps.organize.outputs.status == 'success' && env.FIRMWARE_RELEASE == 'true' && !cancelled()
+      run: |
+        echo "release_tag=${{ env.DATE }}" >> $GITHUB_OUTPUT
+        [ -e release ] && cp release ./release.txt
+        echo "status=success" >> $GITHUB_OUTPUT
+
+    - name: 上传releases固件发布
+      uses: softprops/action-gh-release@master
+      if: steps.organize.outputs.status == 'success' && env.FIRMWARE_RELEASE == 'true' && !cancelled()
+      env:
+        GITHUB_TOKEN: ${{ secrets.TOKEN_OPPEN321 }}
       with:
-        name: R${{ env.DATE }} for ${{ env.FIRMWARE_TAG }}
-        allowUpdates: true
-        tag: ${{ env.FIRMWARE_TAG }}
-        token: ${{ secrets.TOKEN_OPPEN321 }}
-        artifacts: ${{ env.FIRMWARE_PATH }}/*
-        body: |
-          **This is OpenWrt Firmware for ${{ env.FIRMWARE_TAG }}**
-          ### 📒 固件信息
-          - 💻 平台架构: ${{ env.DEVICE_TARGET }}-${{ env.DEVICE_SUBTARGET }}
-          - ⚽ 固件源码: ${{ env.REPO_URL }}
-          - 💝 源码分支: ${{ env.REPO_BRANCH }}
-          - 🚀 内核版本: ${{ env.KERNEL }}
-          - 🌐 默认地址: 10.0.0.1
-          - 🔑 默认密码: password
-          ### 🧊 固件版本
-          - 固件编译前最后一次➦[主源码](${{ env.REPO_URL }})更新记录
-          - ${{ env.COMMIT_AUTHOR }}
-          - ${{ env.COMMIT_DATE }}
-          - ${{ env.COMMIT_MESSAGE }}
-          - ${{ env.COMMIT_HASH }}
+        files: ./firmware/*.*
+        name: ${{ env.date1 }}_${{ matrix.target.arch }}_${{ matrix.target.kernel }}
+        tag_name: ${{ env.FIRMWARE_TAG }}_${{ env.VERSION }}
+        body_path: release.txt
+
+    - name: 删除workflow工作流
+      uses: Mattraks/delete-workflow-runs@main
+      with:
+        token: ${{ secrets.TOKEN_TOKEN_OPPEN321 }}
+        repository: ${{ github.repository }}
+        retain_days: 1
+        keep_minimum_runs: 1
+
+    - name: 删除releases旧版本
+      uses: dev-drprasad/delete-older-releases@master
+      if: env.UPLOAD_RELEASE == 'true' && !cancelled()
+      env:
+        GITHUB_TOKEN: ${{ secrets.TOKEN_OPPEN321 }}
+      with:
+        keep_latest: 5
+        delete_tags: true
