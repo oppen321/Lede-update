@@ -143,7 +143,7 @@ jobs:
     - name: 重命名文件
       if: steps.compile.outputs.status == 'success' && !cancelled()
       run: |
-        find $OPENWRT_PATH/bin/targets -type f \( -name "openwrt*.gz" \) -exec sh -c 'mv "$1" "$(dirname "$1")/${{ env.DATE }}-${{ env.FIRMWARE_TAG }}-$(basename "$1")"' sh {} \; 2>/dev/null || true
+        find $OPENWRT_PATH/bin/targets -type f \( -name "openwrt*.gz" \) -exec sh -c 'mv "$1" "$(dirname "$1")/${{ env.DATE }}-${{ env.VERSION }}-$(basename "$1")"' sh {} \; 2>/dev/null || true
 
     - name: 整理文件
       id: organize
