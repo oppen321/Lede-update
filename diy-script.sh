@@ -118,6 +118,9 @@ git clone --depth=1 https://github.com/oppen321/luci-app-gpsysupgrade package/lu
 # luci-app-partexp
 git clone --depth=1 https://github.com/sirpdboy/luci-app-partexp package/luci-app-partexp
 
+# ChatGpt Web
+git clone --depth=1 https://github.com/sirpdboy/chatgpt-web.git package/luci-app-chatgpt
+
 # x86 型号只显示 CPU 型号
 sed -i 's/${g}.*/${a}${b}${c}${d}${e}${f}${hydrid}/g' package/lean/autocore/files/x86/autocore
 
