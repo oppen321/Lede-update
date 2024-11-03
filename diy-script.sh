@@ -127,8 +127,8 @@ rm -rf feeds/luci/applications/luci-app-passwall2/*
 rm -rf feeds/luci/applications/luci-app-openclash/*
 cp -af package/luci-app-passwall/luci-app-passwall/* feeds/luci/applications/luci-app-passwall/
 cp -af package/luci-app-passwall/luci-app-passwall/* feeds/luci/applications/luci-app-passwall2/
-cp -af package/luci-app-openclash/*  feeds/luci/applications/luci-app-openclash/
-cp -af package/luci-app-ssr-plus/*  feeds/luci/applications/luci-app-ssr-plus/
+cp -af package/luci-app-openclash/* feeds/luci/applications/luci-app-openclash/
+cp -af package/luci-app-ssr-plus/* feeds/luci/applications/luci-app-ssr-plus/
 
 # x86 型号只显示 CPU 型号
 sed -i 's/${g}.*/${a}${b}${c}${d}${e}${f}${hydrid}/g' package/lean/autocore/files/x86/autocore
