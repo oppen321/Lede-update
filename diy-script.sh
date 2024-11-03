@@ -174,7 +174,7 @@ echo -e "msgstr \"魔法网络\"" >> feeds/luci/modules/luci-base/po/zh_Hans/bas
 sed -i 's/services/control/g' package/OpenAppFilter/luci-app-oaf/luasrc/controller/*.lua
 sed -i 's/services/control/g' package/OpenAppFilter/luci-app-oaf/luasrc/model/cbi/appfilter/*.lua
 sed -i 's/services/control/g' package/OpenAppFilter/luci-app-oaf/luasrc/view/admin_network/*.htm
-sed -i 's/services/control/g' package/OpenAppFilter/luci-app-oaf/luasrc/cbi/*.htm
+sed -i 's/services/control/g' package/OpenAppFilter/luci-app-oaf/luasrc/view/cbi/*.htm
 
 sed -i 's/services/control/g' feeds/luci/applications/luci-app-accesscontrol/luasrc/controller/*.lua
 sed -i 's/services/control/g' feeds/luci/applications/luci-app-accesscontrol/luasrc/model/cbi/*.lua
