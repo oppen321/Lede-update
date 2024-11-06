@@ -23,23 +23,6 @@ rm -rf feeds/packages/lang/golang
 find ./ | grep Makefile | grep v2ray-geodata | xargs rm -f
 find ./ | grep Makefile | grep mosdns | xargs rm -f
 
-# golong1.23依赖
-#git clone --depth=1 https://github.com/sbwml/packages_lang_golang -b 22.x feeds/packages/lang/golang
-git clone https://github.com/sbwml/packages_lang_golang -b 23.x feeds/packages/lang/golang
-
-# 移除要替换的包
-rm -rf feeds/packages/net/mosdns
-rm -rf feeds/packages/net/msd_lite
-rm -rf feeds/packages/net/smartdns
-rm -rf feeds/luci/themes/luci-theme-argon
-rm -rf feeds/luci/themes/luci-theme-netgear
-rm -rf feeds/luci/applications/luci-app-mosdns
-rm -rf feeds/luci/applications/luci-app-netdata
-rm -rf feeds/luci/applications/luci-app-serverchan
-rm -rf feeds/packages/lang/golang
-find ./ | grep Makefile | grep v2ray-geodata | xargs rm -f
-find ./ | grep Makefile | grep mosdns | xargs rm -f
-
 # Git稀疏克隆，只克隆指定目录到本地
 function git_sparse_clone() {
   branch="$1" repourl="$2" && shift 2
