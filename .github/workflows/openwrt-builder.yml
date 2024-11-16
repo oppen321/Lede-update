@@ -102,6 +102,8 @@ jobs:
     - name: 安装Feeds
       run: |
         cd $OPENWRT_PATH
+        sed -i 's/^#src-git luci https:\/\/github.com\/coolsnowwolf\/luci/src-git luci https:\/\/github.com\/coolsnowwolf\/luci/' ./feeds.conf.default
+        sed -i 's/^src-git luci https:\/\/github.com\/coolsnowwolf\/luci\.git;openwrt-23\.05/#src-git luci https:\/\/github.com\/coolsnowwolf\/luci.git;openwrt-23.05/' ./feeds.conf.default
         ./scripts/feeds update -a
         ./scripts/feeds install -a
 
