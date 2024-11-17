@@ -1,4 +1,4 @@
-name: 编译固件
+name: 编译固件-23.05
 
 on:
 #  repository_dispatch:
