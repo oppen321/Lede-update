@@ -149,11 +149,11 @@ echo -n "$(date +'%Y%m%d')" > package/base-files/files/etc/openwrt_version
 sed -i 's/Variable1 = "*.*"/Variable1 = "oppen321"/g' package/lean/luci-app-gpsysupgrade/luasrc/model/cbi/gpsysupgrade/sysupgrade.lua
 sed -i 's/Variable2 = "*.*"/Variable2 = "Lede-update"/g' package/lean/luci-app-gpsysupgrade/luasrc/model/cbi/gpsysupgrade/sysupgrade.lua
 sed -i 's/Variable3 = "*.*"/Variable3 = "x86_64"/g' package/lean/luci-app-gpsysupgrade/luasrc/model/cbi/gpsysupgrade/sysupgrade.lua
-sed -i 's/Variable4 = "*.*"/Variable4 = "6.6"/g' package/lean/luci-app-gpsysupgrade/luasrc/model/cbi/gpsysupgrade/sysupgrade.lua
+sed -i 's/Variable4 = "*.*"/Variable4 = "6.12"/g' package/lean/luci-app-gpsysupgrade/luasrc/model/cbi/gpsysupgrade/sysupgrade.lua
 sed -i 's/Variable1 = "*.*"/Variable1 = "oppen321"/g' package/lean/luci-app-gpsysupgrade/root/usr/bin/upgrade.lua
 sed -i 's/Variable2 = "*.*"/Variable2 = "Lede-update"/g' package/lean/luci-app-gpsysupgrade/root/usr/bin/upgrade.lua
 sed -i 's/Variable3 = "*.*"/Variable3 = "x86_64"/g' package/lean/luci-app-gpsysupgrade/root/usr/bin/upgrade.lua
-sed -i 's/Variable4 = "*.*"/Variable4 = "6.6"/g' package/lean/luci-app-gpsysupgrade/root/usr/bin/upgrade.lua
+sed -i 's/Variable4 = "*.*"/Variable4 = "6.12"/g' package/lean/luci-app-gpsysupgrade/root/usr/bin/upgrade.lua
 
 ./scripts/feeds update -a
 ./scripts/feeds install -a
