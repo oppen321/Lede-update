@@ -1,9 +1,7 @@
-#!/bin/bash
-
-# 添加 ZeroWrt 脚本到 /etc/init.d
 mkdir -p files/etc/init.d
 mkdir -p files/bin
 
+# 创建脚本文件
 cat << 'EOF' > files/etc/init.d/ZeroWrt
 #!/bin/ash
 # ZeroWrt 菜单脚本
@@ -67,7 +65,9 @@ reset_config() {
 show_menu
 EOF
 
-# 设置执行权限
+# 设置脚本权限
 chmod +x files/etc/init.d/ZeroWrt
-ln -s /etc/init.d/ZeroWrt files/bin/ZeroWrt
+
+# 创建符号链接，指向 init.d 脚本
+ln -sf /etc/init.d/ZeroWrt files/bin/ZeroWrt
 chmod +x files/bin/ZeroWrt
