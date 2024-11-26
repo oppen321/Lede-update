@@ -46,11 +46,12 @@ function change_password {
 
 # 3. 切换默认主题
 function change_theme {
-    # 切换主题配置（例如切换为 OpenWrt 默认主题）
-    rm -rf /etc/config/luci
-    opkg update
-    opkg install luci-theme-bootstrap
-    echo "主题已切换为 OpenWrt 默认主题"
+    # 直接修改 luci 配置文件来切换主题
+    # 假设主题配置文件位于 /etc/config/luci
+    # 这里将主题切换为 OpenWrt 默认的 luci-theme-bootstrap
+    uci set luci.main.mediaurlbase='/luci-static/bootstrap'
+    uci commit luci
+    echo "主题已切换为默认的 OpenWrt 主题"
     read -p "按 Enter 键返回菜单..."
     show_menu
 }
