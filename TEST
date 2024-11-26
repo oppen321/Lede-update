@@ -104,11 +104,23 @@ set_dhcp_mode() {
     echo "正在设置为 DHCP 模式..."
     uci set network.wan.proto='dhcp'
     uci commit network
-    enable_full_nat
-    enable_syn_flood
-    enable_lan_dhcp
-    disable_lan_masquerade
+
+    # 开启 LAN 口 DHCP 服务，启用 SYN-flood 防御，启用 FullCone-NAT
+    uci set dhcp.lan.ignore='0'
+    uci commit dhcp
+
+    uci set firewall.@defaults[0].synflood_protect='1'
+    uci set firewall.@defaults[0].fullcone='1'
+
+    # 禁用 LAN 区域伪装，启用 WAN 区域伪装
+    uci delete firewall.@zone[0].masq
+    uci delete firewall.@zone[0].mtu_fix
+    uci set firewall.@zone[1].masq='1'
+    uci set firewall.@zone[1].mtu_fix='1'
+    uci commit firewall
+
     /etc/init.d/network restart
+    /etc/init.d/firewall restart
     echo "已设置为 DHCP 模式。"
     printf "按 Enter 键返回菜单..."
     read
@@ -126,11 +138,23 @@ set_pppoe_mode() {
         uci set network.wan.username="$username"
         uci set network.wan.password="$password"
         uci commit network
-        enable_full_nat
-        enable_syn_flood
-        enable_lan_dhcp
-        disable_lan_masquerade
+
+        # 开启 LAN 口 DHCP 服务，启用 SYN-flood 防御，启用 FullCone-NAT
+        uci set dhcp.lan.ignore='0'
+        uci commit dhcp
+
+        uci set firewall.@defaults[0].synflood_protect='1'
+        uci set firewall.@defaults[0].fullcone='1'
+
+        # 禁用 LAN 区域伪装，启用 WAN 区域伪装
+        uci delete firewall.@zone[0].masq
+        uci delete firewall.@zone[0].mtu_fix
+        uci set firewall.@zone[1].masq='1'
+        uci set firewall.@zone[1].mtu_fix='1'
+        uci commit firewall
+
         /etc/init.d/network restart
+        /etc/init.d/firewall restart
         echo "PPPoE 模式已设置完成。"
     else
         echo "未输入有效的用户名或密码，操作取消。"
@@ -163,22 +187,20 @@ set_bypass_mode() {
     uci commit network
 
     uci set dhcp.lan.ignore='1'
-    uci set dhcp.lan.dhcpv6='disabled'
-    uci set dhcp.lan.ra='disabled'
-    uci set dhcp.lan.ndp='disabled'
     uci commit dhcp
 
+    uci set firewall.@defaults[0].synflood_protect='0'
+    uci set firewall.@defaults[0].fullcone='0'
+
+    # 启用 LAN 和 WAN 区域伪装
     uci set firewall.@zone[0].masq='1'
     uci set firewall.@zone[0].mtu_fix='1'
     uci set firewall.@zone[1].masq='1'
     uci set firewall.@zone[1].mtu_fix='1'
     uci commit firewall
 
-    disable_full_nat
-    disable_syn_flood
     /etc/init.d/network restart
     /etc/init.d/firewall restart
-
     echo "旁路由模式已设置："
     echo "LAN IP: $lan_ip"
     echo "网关: $gateway"
@@ -188,47 +210,42 @@ set_bypass_mode() {
     network_wizard
 }
 
-# 禁用 LAN 区域动态伪装
-disable_lan_masquerade() {
-    uci set firewall.@zone[0].masq='0'
-    uci set firewall.@zone[0].mtu_fix='0'
-    uci commit firewall
-}
-
-# 启用 FullCone-NAT
-enable_full_nat() {
-    uci set firewall.@defaults[0].fullcone='1'
-    uci commit firewall
-}
-
-# 禁用 FullCone-NAT
-disable_full_nat() {
-    uci set firewall.@defaults[0].fullcone='0'
-    uci commit firewall
-}
-
-# 启用 SYN-flood 防御
-enable_syn_flood() {
-    uci set firewall.@defaults[0].synflood_protect='1'
-    uci commit firewall
-}
-
-# 禁用 SYN-flood 防御
-disable_syn_flood() {
-    uci set firewall.@defaults[0].synflood_protect='0'
-    uci commit firewall
-}
-
-# 启用 LAN 口 DHCP 服务
-enable_lan_dhcp() {
-    uci delete dhcp.lan.ignore
-    uci set dhcp.lan.start='100'
-    uci set dhcp.lan.limit='150'
-    uci set dhcp.lan.leasetime='12h'
-    uci commit dhcp
-}
-
-# 主程序入口
-while true; do
+# 6. 开关 IPv6 功能
+toggle_ipv6() {
+    ipv6_status=$(uci get network.lan.delegate 2>/dev/null)
+    if [ "$ipv6_status" = "1" ]; then
+        echo "正在关闭 IPv6..."
+        uci set network.lan.delegate='0'
+        uci delete network.lan.ip6assign
+        uci set dhcp.lan.dhcpv6='disabled'
+        uci set dhcp.lan.ra='disabled'
+        uci set dhcp.lan.ndp='disabled'
+        uci set dhcp.lan.ra_management='0'
+        uci set dhcp.@dnsmasq[0].filter_aaaa='1'
+        uci commit network
+        uci commit dhcp
+        /etc/init.d/network restart
+        /etc/init.d/dnsmasq restart
+        echo "IPv6 已关闭。"
+    else
+        echo "正在开启 IPv6..."
+        uci set network.lan.delegate='1'
+        uci set network.lan.ip6assign='64'
+        uci set dhcp.lan.dhcpv6='server'
+        uci set dhcp.lan.ra='server'
+        uci set dhcp.lan.ndp='hybrid'
+        uci set dhcp.lan.ra_management='1'
+        uci delete dhcp.@dnsmasq[0].filter_aaaa
+        uci commit network
+        uci commit dhcp
+        /etc/init.d/network restart
+        /etc/init.d/dnsmasq restart
+        echo "IPv6 已开启。"
+    fi
+    printf "按 Enter 键返回菜单..."
+    read
     show_menu
-done
+}
+
+# 启动菜单
+show_menu
