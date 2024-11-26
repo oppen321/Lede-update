@@ -1,3 +1,6 @@
+#!/bin/bash
+
+# 创建文件夹结构
 mkdir -p files/etc/init.d
 mkdir -p files/bin
 
@@ -31,9 +34,13 @@ show_menu() {
 change_ip() {
     printf "请输入新的 LAN 口 IP 地址（如 192.168.1.2）: "
     read new_ip
-    sed -i "s/option ipaddr.*/option ipaddr '$new_ip'/" /etc/config/network
-    /etc/init.d/network restart
-    echo "LAN 口 IP 已成功更改为 $new_ip"
+    if [ -n "$new_ip" ]; then
+        sed -i "s/option ipaddr.*/option ipaddr '$new_ip'/" /etc/config/network
+        /etc/init.d/network restart
+        echo "LAN 口 IP 已成功更改为 $new_ip"
+    else
+        echo "未输入有效的 IP 地址，操作取消。"
+    fi
     sleep 2
     show_menu
 }
@@ -41,8 +48,12 @@ change_ip() {
 change_password() {
     printf "请输入新密码: "
     read new_password
-    (echo "$new_password"; echo "$new_password") | passwd root
-    echo "密码已成功更改"
+    if [ -n "$new_password" ]; then
+        (echo "$new_password"; echo "$new_password") | passwd root
+        echo "密码已成功更改"
+    else
+        echo "未输入有效密码，操作取消。"
+    fi
     sleep 2
     show_menu
 }
@@ -58,7 +69,7 @@ change_theme() {
 reset_config() {
     echo "正在恢复出厂设置..."
     sleep 2
-    firstboot
+    firstboot -y
     reboot
 }
 
@@ -68,6 +79,6 @@ EOF
 # 设置脚本权限
 chmod +x files/etc/init.d/ZeroWrt
 
-# 创建符号链接，指向 init.d 脚本
-ln -sf /etc/init.d/ZeroWrt files/bin/ZeroWrt
+# 创建脚本副本到 /bin
+cp files/etc/init.d/ZeroWrt files/bin/ZeroWrt
 chmod +x files/bin/ZeroWrt
