@@ -107,6 +107,7 @@ set_dhcp_mode() {
     enable_full_nat
     enable_syn_flood
     enable_lan_dhcp
+    disable_lan_masquerade
     /etc/init.d/network restart
     echo "已设置为 DHCP 模式。"
     printf "按 Enter 键返回菜单..."
@@ -128,6 +129,7 @@ set_pppoe_mode() {
         enable_full_nat
         enable_syn_flood
         enable_lan_dhcp
+        disable_lan_masquerade
         /etc/init.d/network restart
         echo "PPPoE 模式已设置完成。"
     else
@@ -186,66 +188,11 @@ set_bypass_mode() {
     network_wizard
 }
 
-# 开关 IPv6 功能
-toggle_ipv6() {
-    echo "=============================="
-    echo "  IPv6 功能"
-    echo "=============================="
-    echo "1. 开启 IPv6"
-    echo "2. 关闭 IPv6"
-    echo "0. 返回上一级菜单"
-    echo "=============================="
-    printf "请输入您的选择 [0-2]: "
-    read ipv6_choice
-    case "$ipv6_choice" in
-        1) enable_ipv6 ;;
-        2) disable_ipv6 ;;
-        0) show_menu ;;
-        *) echo "无效选项，请重新输入"; toggle_ipv6 ;;
-    esac
-}
-
-# 启用 IPv6
-enable_ipv6() {
-    uci set network.lan.delegate='1'
-    uci set network.lan.ip6assign='64'
-    uci commit network
-
-    uci set dhcp.lan.dhcpv6='server'
-    uci set dhcp.lan.ra='server'
-    uci set dhcp.lan.ndp='relay'
-    uci set dhcp.lan.ra_management='1'
-    uci commit dhcp
-
-    uci delete dhcp.@dnsmasq[0].filter_aaaa
-    uci commit dhcp
-
-    /etc/init.d/network restart
-    /etc/init.d/dnsmasq restart
-    echo "IPv6 功能已开启。"
-    printf "按 Enter 键返回菜单..."
-    read
-    show_menu
-}
-
-# 禁用 IPv6
-disable_ipv6() {
-    uci set network.lan.delegate='0'
-    uci delete network.lan.ip6assign
-    uci commit network
-
-    uci set dhcp.lan.dhcpv6='disabled'
-    uci set dhcp.lan.ra='disabled'
-    uci set dhcp.lan.ndp='disabled'
-    uci delete dhcp.@dnsmasq[0].filter_aaaa
-    uci commit dhcp
-
-    /etc/init.d/network restart
-    /etc/init.d/dnsmasq restart
-    echo "IPv6 功能已关闭。"
-    printf "按 Enter 键返回菜单..."
-    read
-    show_menu
+# 禁用 LAN 区域动态伪装
+disable_lan_masquerade() {
+    uci set firewall.@zone[0].masq='0'
+    uci set firewall.@zone[0].mtu_fix='0'
+    uci commit firewall
 }
 
 # 启用 FullCone-NAT
