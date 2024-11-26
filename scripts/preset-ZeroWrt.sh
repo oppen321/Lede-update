@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # 添加 ZeroWrt 脚本到 /etc/init.d
 mkdir -p files/etc/init.d
 mkdir -p files/bin
