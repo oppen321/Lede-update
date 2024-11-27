@@ -9,12 +9,9 @@ cat << 'EOF' > files/bin/ZeroWrt
 
 # 显示菜单
 show_menu() {
-    echo -e "\e[35m+--------------------------------------------------+\e[0m"
-    echo -e "\e[35m|                                                  |\e[0m"
-    echo -e "\e[31m|                ZeroWrt 选项菜单                  |\e[0m"
-    echo -e "\e[35m|                                                  |\e[0m"
-    echo -e "\e[35m|                     博客地址:www.kejizero.online |\e[0m"
-    echo -e "\e[35m+--------------------------------------------------+\e[0m"
+    echo "=============================="
+    echo "  ZeroWrt 选项菜单"
+    echo "=============================="
     echo "1. 更换 LAN 口 IP 地址"
     echo "2. 更改管理员密码"
     echo "3. 切换默认主题"
@@ -108,16 +105,12 @@ ipv6_settings() {
 # 开启 IPv6
 enable_ipv6() {
     echo "正在开启 IPv6..."
-    # 开启 IPv6 分配长度、路由通告、DHCPv6 服务
     uci set network.lan.ip6assign='64'
     uci set dhcp.lan.ra='server'
     uci set dhcp.lan.dhcpv6='server'
-    
-    # 启用解析 IPv6 DNS 记录
-    if ! uci show dhcp.@dnsmasq[0].filter_aaaa >/dev/null 2>&1; then
-        uci add_list dhcp.@dnsmasq[0].filter_aaaa='0'
+    if uci show dhcp.@dnsmasq[0].filter_aaaa >/dev/null 2>&1; then
+        uci delete dhcp.@dnsmasq[0].filter_aaaa
     fi
-
     uci commit
     /etc/init.d/network restart
     echo "IPv6 功能已开启。"
@@ -129,16 +122,12 @@ enable_ipv6() {
 # 关闭 IPv6
 disable_ipv6() {
     echo "正在关闭 IPv6..."
-    # 禁用 IPv6 分配长度、路由通告、DHCPv6 服务
     if uci show network.lan.ip6assign >/dev/null 2>&1; then
         uci delete network.lan.ip6assign
     fi
     uci set dhcp.lan.ra='disabled'
     uci set dhcp.lan.dhcpv6='disabled'
-
-    # 禁用解析 IPv6 DNS 记录
     uci set dhcp.@dnsmasq[0].filter_aaaa='1'
-
     uci commit
     /etc/init.d/network restart
     echo "IPv6 功能已关闭。"
