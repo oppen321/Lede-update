@@ -9,19 +9,17 @@ show_menu() {
     echo "2. 更改管理员密码"
     echo "3. 切换默认主题"
     echo "4. 一键重置配置"
-    echo "5. 网络向导"
-    echo "6. 开关 IPv6 功能"
+    echo "5. IPv6 设置"
     echo "0. 退出"
     echo "=============================="
-    printf "请输入您的选择 [0-6]: "
+    printf "请输入您的选择 [0-5]: "
     read choice
     case "$choice" in
         1) change_ip ;;
         2) change_password ;;
         3) change_theme ;;
         4) reset_config ;;
-        5) network_wizard ;;
-        6) toggle_ipv6 ;;
+        5) ipv6_settings ;;
         0) exit 0 ;;
         *) echo "无效选项，请重新输入"; show_menu ;;
     esac
@@ -78,170 +76,54 @@ reset_config() {
     reboot
 }
 
-# 5. 网络向导
-network_wizard() {
+# 5. IPv6 设置
+ipv6_settings() {
     echo "=============================="
-    echo "  网络向导"
+    echo "  IPv6 设置"
     echo "=============================="
-    echo "1. DHCP 模式"
-    echo "2. PPPoE 模式"
-    echo "3. 旁路由模式"
-    echo "0. 返回上一级菜单"
+    echo "1. 开启 IPv6"
+    echo "2. 关闭 IPv6"
+    echo "0. 返回上一级"
     echo "=============================="
-    printf "请输入您的选择 [0-3]: "
-    read net_choice
-    case "$net_choice" in
-        1) set_dhcp_mode ;;
-        2) set_pppoe_mode ;;
-        3) set_bypass_mode ;;
+    printf "请输入您的选择 [0-2]: "
+    read ipv6_choice
+    case "$ipv6_choice" in
+        1) enable_ipv6 ;;
+        2) disable_ipv6 ;;
         0) show_menu ;;
-        *) echo "无效选项，请重新输入"; network_wizard ;;
+        *) echo "无效选项，请重新输入"; ipv6_settings ;;
     esac
 }
 
-# 设置 DHCP 模式
-set_dhcp_mode() {
-    echo "正在设置为 DHCP 模式..."
-    uci set network.wan.proto='dhcp'
-    uci commit network
-
-    # 开启 LAN 口 DHCP 服务，启用 SYN-flood 防御，启用 FullCone-NAT
-    uci set dhcp.lan.ignore='0'
-    uci commit dhcp
-
-    uci set firewall.@defaults[0].synflood_protect='1'
-    uci set firewall.@defaults[0].fullcone='1'
-
-    # 禁用 LAN 区域伪装，启用 WAN 区域伪装
-    uci delete firewall.@zone[0].masq
-    uci delete firewall.@zone[0].mtu_fix
-    uci set firewall.@zone[1].masq='1'
-    uci set firewall.@zone[1].mtu_fix='1'
-    uci commit firewall
-
-    /etc/init.d/network restart
-    /etc/init.d/firewall restart
-    echo "已设置为 DHCP 模式。"
-    printf "按 Enter 键返回菜单..."
-    read
-    network_wizard
-}
-
-# 设置 PPPoE 模式
-set_pppoe_mode() {
-    printf "请输入 PPPoE 用户名："
-    read username
-    printf "请输入 PPPoE 密码："
-    read password
-    if [ -n "$username" ] && [ -n "$password" ]; then
-        uci set network.wan.proto='pppoe'
-        uci set network.wan.username="$username"
-        uci set network.wan.password="$password"
-        uci commit network
-
-        # 开启 LAN 口 DHCP 服务，启用 SYN-flood 防御，启用 FullCone-NAT
-        uci set dhcp.lan.ignore='0'
-        uci commit dhcp
-
-        uci set firewall.@defaults[0].synflood_protect='1'
-        uci set firewall.@defaults[0].fullcone='1'
-
-        # 禁用 LAN 区域伪装，启用 WAN 区域伪装
-        uci delete firewall.@zone[0].masq
-        uci delete firewall.@zone[0].mtu_fix
-        uci set firewall.@zone[1].masq='1'
-        uci set firewall.@zone[1].mtu_fix='1'
-        uci commit firewall
-
-        /etc/init.d/network restart
-        /etc/init.d/firewall restart
-        echo "PPPoE 模式已设置完成。"
-    else
-        echo "未输入有效的用户名或密码，操作取消。"
-    fi
-    printf "按 Enter 键返回菜单..."
-    read
-    network_wizard
-}
-
-# 设置旁路由模式
-set_bypass_mode() {
-    printf "请输入 LAN 口 IP 地址（默认 192.168.2.1）："
-    read lan_ip
-    [ -z "$lan_ip" ] && lan_ip="192.168.2.1"
-
-    printf "请输入网关地址（默认 192.168.1.1）："
-    read gateway
-    [ -z "$gateway" ] && gateway="192.168.1.1"
-
-    printf "请输入 DNS 地址（默认 223.5.5.5）："
-    read dns
-    [ -z "$dns" ] && dns="223.5.5.5"
-
-    echo "正在设置为旁路由模式..."
-    uci set network.lan.ipaddr="$lan_ip"
-    uci set network.lan.gateway="$gateway"
-    uci set network.lan.dns="$dns"
-    uci set network.lan.delegate='0'
-    uci delete network.lan.ip6assign
-    uci commit network
-
-    uci set dhcp.lan.ignore='1'
-    uci commit dhcp
-
-    uci set firewall.@defaults[0].synflood_protect='0'
-    uci set firewall.@defaults[0].fullcone='0'
-
-    # 启用 LAN 和 WAN 区域伪装
-    uci set firewall.@zone[0].masq='1'
-    uci set firewall.@zone[0].mtu_fix='1'
-    uci set firewall.@zone[1].masq='1'
-    uci set firewall.@zone[1].mtu_fix='1'
-    uci commit firewall
-
-    /etc/init.d/network restart
-    /etc/init.d/firewall restart
-    echo "旁路由模式已设置："
-    echo "LAN IP: $lan_ip"
-    echo "网关: $gateway"
-    echo "DNS: $dns"
-    printf "按 Enter 键返回菜单..."
-    read
-    network_wizard
-}
-
-# 6. 开关 IPv6 功能
-toggle_ipv6() {
-    ipv6_status=$(uci get network.lan.delegate 2>/dev/null)
-    if [ "$ipv6_status" = "1" ]; then
-        echo "正在关闭 IPv6..."
-        uci set network.lan.delegate='0'
-        uci delete network.lan.ip6assign
-        uci set dhcp.lan.dhcpv6='disabled'
-        uci set dhcp.lan.ra='disabled'
-        uci set dhcp.lan.ndp='disabled'
-        uci set dhcp.lan.ra_management='0'
-        uci set dhcp.@dnsmasq[0].filter_aaaa='1'
-        uci commit network
-        uci commit dhcp
-        /etc/init.d/network restart
-        /etc/init.d/dnsmasq restart
-        echo "IPv6 已关闭。"
-    else
-        echo "正在开启 IPv6..."
-        uci set network.lan.delegate='1'
-        uci set network.lan.ip6assign='64'
-        uci set dhcp.lan.dhcpv6='server'
-        uci set dhcp.lan.ra='server'
-        uci set dhcp.lan.ndp='hybrid'
-        uci set dhcp.lan.ra_management='1'
+# 开启 IPv6
+enable_ipv6() {
+    echo "正在开启 IPv6..."
+    uci set network.lan.ip6assign='64'
+    uci set dhcp.lan.ra='server'
+    uci set dhcp.lan.dhcpv6='server'
+    if uci show dhcp.@dnsmasq[0].filter_aaaa >/dev/null 2>&1; then
         uci delete dhcp.@dnsmasq[0].filter_aaaa
-        uci commit network
-        uci commit dhcp
-        /etc/init.d/network restart
-        /etc/init.d/dnsmasq restart
-        echo "IPv6 已开启。"
     fi
+    uci commit
+    /etc/init.d/network restart
+    echo "IPv6 功能已开启。"
+    printf "按 Enter 键返回菜单..."
+    read
+    show_menu
+}
+
+# 关闭 IPv6
+disable_ipv6() {
+    echo "正在关闭 IPv6..."
+    if uci show network.lan.ip6assign >/dev/null 2>&1; then
+        uci delete network.lan.ip6assign
+    fi
+    uci set dhcp.lan.ra='disabled'
+    uci set dhcp.lan.dhcpv6='disabled'
+    uci set dhcp.@dnsmasq[0].filter_aaaa='1'
+    uci commit
+    /etc/init.d/network restart
+    echo "IPv6 功能已关闭。"
     printf "按 Enter 键返回菜单..."
     read
     show_menu
