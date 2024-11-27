@@ -9,9 +9,12 @@ cat << 'EOF' > files/bin/ZeroWrt
 
 # 显示菜单
 show_menu() {
-    echo "=============================="
-    echo "  ZeroWrt 选项菜单"
-    echo "=============================="
+    echo -e "\e[35m+--------------------------------------------------+\e[0m"
+    echo -e "\e[35m|                                                  |\e[0m"
+    echo -e "\e[35m|              \e[1mZeroWrt 选项菜单                    |\e[0m"
+    echo -e "\e[35m|                                                  |\e[0m"
+    echo -e "\e[35m|                     博客地址:www.kejizero.online |\e[0m"
+    echo -e "\e[35m+--------------------------------------------------+\e[0m"
     echo "1. 更换 LAN 口 IP 地址"
     echo "2. 更改管理员密码"
     echo "3. 切换默认主题"
