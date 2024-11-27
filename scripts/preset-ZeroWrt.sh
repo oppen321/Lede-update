@@ -11,7 +11,7 @@ cat << 'EOF' > files/bin/ZeroWrt
 show_menu() {
     echo -e "\e[35m+--------------------------------------------------+\e[0m"
     echo -e "\e[35m|                                                  |\e[0m"
-    echo -e "\e[35m|              \e[1mZeroWrt 选项菜单                    |\e[0m"
+    echo -e "\e[31m|                ZeroWrt 选项菜单                  |\e[0m"
     echo -e "\e[35m|                                                  |\e[0m"
     echo -e "\e[35m|                     博客地址:www.kejizero.online |\e[0m"
     echo -e "\e[35m+--------------------------------------------------+\e[0m"
