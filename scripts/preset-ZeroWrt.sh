@@ -5,7 +5,7 @@ mkdir -p files/bin
 
 # 创建脚本文件
 cat << 'EOF' > files/bin/ZeroWrt
-#!/bin/zsh
+#!/usr/bin/zsh
 
 # 显示菜单
 show_menu() {
@@ -34,7 +34,7 @@ show_menu() {
 change_ip() {
     printf "请输入新的 LAN 口 IP 地址（如 192.168.1.2）："
     read new_ip
-    if [ -n "$new_ip" ]; then
+    if [[ -n "$new_ip" ]]; then
         uci set network.lan.ipaddr="$new_ip"
         uci commit network
         /etc/init.d/network restart
@@ -51,7 +51,7 @@ change_ip() {
 change_password() {
     printf "请输入新密码："
     read new_password
-    if [ -n "$new_password" ]; then
+    if [[ -n "$new_password" ]]; then
         # 使用 OpenWrt 的 `passwd` 工具更新密码
         echo -e "$new_password\n$new_password" | passwd root
         echo "管理员密码已成功更改。"
@@ -66,9 +66,9 @@ change_password() {
 # 3. 切换默认主题
 change_theme() {
     # 使用 UCI 修改 luci 配置
-    uci set luci.main.mediaurlbase='/luci-static/bootstrap'
+    uci set luci.main.mediaurlbase='/luci-static/design'
     uci commit luci
-    echo "主题已切换为默认的 OpenWrt 主题（luci-theme-bootstrap）。"
+    echo "主题已切换为 design 主题。"
     printf "按 Enter 键返回菜单..."
     read
     show_menu
