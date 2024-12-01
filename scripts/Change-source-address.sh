@@ -14,4 +14,4 @@ src/gz openwrt_telephony https://mirrors.tencent.com/lede/releases/18.06.9/packa
 # 创建 opkg 配置文件并写入源地址
 echo "$NEW_SOURCES" > files/etc/opkg/distfeeds.conf
 
-chmod +x files/etc/opkg.conf
+chmod +x files/etc/opkg/distfeeds.conf
