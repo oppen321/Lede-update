@@ -105,6 +105,7 @@ enable_ipv6() {
         uci delete dhcp.@dnsmasq[0].filter_aaaa
     fi
     uci commit
+    sleep 2  # 延时，确保网络配置已更新
     /etc/init.d/network restart
     echo "IPv6 功能已开启。"
     printf "按 Enter 键返回菜单..."
@@ -122,6 +123,7 @@ disable_ipv6() {
     uci set dhcp.lan.dhcpv6='disabled'
     uci set dhcp.@dnsmasq[0].filter_aaaa='1'
     uci commit
+    sleep 2  # 延时，确保网络配置已更新
     /etc/init.d/network restart
     echo "IPv6 功能已关闭。"
     printf "按 Enter 键返回菜单..."
