@@ -24,7 +24,6 @@ print_header() {
     color_output "\e[35m\          Z e r o W r t   By   Z e r o      / \e[0m"
     color_output "\e[31m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\e[0m"
     color_output "==============================================="
-    color_output "            本脚本帮助您设置 ZeroWrt。        "
     color_output "  博客地址: https://www.kejizero.online      "
     color_output "                               版本: 1.0.0 "
     color_output "                               作者: Zero  "
@@ -32,8 +31,6 @@ print_header() {
     color_output "==============================================="
     color_output "  本脚本帮助您设置 ZeroWrt。                "
     color_output "  博客地址: https://www.kejizero.online      "
-    color_output "==============================================="
-    color_output "               请选择一个选项:               "
     color_output "==============================================="
 }
 
@@ -116,7 +113,6 @@ reset_config() {
 # 启动菜单
 print_header
 show_menu
-
 EOF
 
 # 设置脚本权限
