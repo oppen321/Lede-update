@@ -5,7 +5,7 @@ mkdir -p files/bin
 
 # 创建脚本文件
 cat << 'EOF' > files/bin/ZeroWrt
-#!/bin/ash
+#!/bin/zsh
 
 # 显示菜单
 show_menu() {
@@ -36,7 +36,7 @@ show_menu() {
 change_ip() {
     printf "请输入新的 LAN 口 IP 地址（如 192.168.1.2）："
     read new_ip
-    if [ -n "$new_ip" ]; then
+    if [[ -n "$new_ip" ]]; then
         uci set network.lan.ipaddr="$new_ip"
         uci commit network
         /etc/init.d/network restart
@@ -53,7 +53,7 @@ change_ip() {
 change_password() {
     printf "请输入新密码："
     read new_password
-    if [ -n "$new_password" ]; then
+    if [[ -n "$new_password" ]]; then
         echo -e "$new_password\n$new_password" | passwd root
         echo "管理员密码已成功更改。"
     else
@@ -138,6 +138,7 @@ disable_ipv6() {
 
 # 启动菜单
 show_menu
+
 EOF
 
 # 设置脚本权限
