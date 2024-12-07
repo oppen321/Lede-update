@@ -1,7 +1,7 @@
 name: 编译固件-18.06-6.12
 
 on:
-  repository_dispatch:
+#  repository_dispatch:
   workflow_dispatch:
 #  schedule:
 #    - cron: 0 19 * * *
